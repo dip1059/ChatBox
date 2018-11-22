@@ -14,6 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+	
 
     /*
     |--------------------------------------------------------------------------
@@ -210,5 +211,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
+	
+	'log’ => ’errorlog’
 
 ];
