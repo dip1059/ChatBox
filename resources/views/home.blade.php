@@ -9,7 +9,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body onload='load()'>
+<body onload='load()' style="background-image: linear-gradient(to right,#cce6ff,#ffb3ff)">
 <div class="container">
 	<h4 id="wp"></h4>
 <br><button id="li" hidden type="button" data-toggle="modal" data-target="#modal" onclick="logBtn()">Login</button>&nbsp<button id="lo" hidden type="button" onclick="logout()">Logout</button><br><br>
@@ -53,12 +53,15 @@
     </thead>
     <tbody id="tbody">
       <tr>
-        <td class='col-sm-8'><div id="scrl" style="height:400px;width:800px;overflow-y:auto;overflow-x:hidden"><div style="width:790px" id="msg"></div></div></td> <td id='frnds' class='col-sm-4'></td>
+        <td class='col-sm-8'><div id="scrl" style="height:350px;width:700px;overflow-y:auto;overflow-x:hidden;background-image: linear-gradient(to right,#ffffcc,#ffffcc);"><div style="width:690px" id="msg"></div></div></td> <td id='frnds' class='col-sm-4'></td>
       </tr>
     </tbody>
   </table>
 
 </div>
+<audio id="aud">
+  <source src="{{asset('audio/stairs.mp3')}}" type="audio/mpeg">
+</audio>
 
 <script type="text/javascript">
 	
@@ -70,10 +73,11 @@
 	});
 
 
-  cus='';
-  frnds='';
-  cid='';
-  fid='';
+  var cus='';
+  var frnds='';
+  var cid='';
+  var fid='';
+  var preclen='';
 
   logBtn= function(){
 		$("#email").val('');
@@ -100,7 +104,9 @@
         cid='';
         fid='';
         cus='';
-        frnds='';   
+        frnds='';
+        pfid='';
+        preclen='';
     }
   });
 }
@@ -182,17 +188,18 @@ user= function(response){
           {
               $("#frnds").append("<div class='row'><a style='color:blue' id='frnd"+frnds[i].id+"' href='#' onclick='ldmsg("+cus.id+","+frnds[i].id+")'>"+frnds[i].name+"</a></div>");
           }
-          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea maxlength='255' rows='10' cols='60'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button></td><td></td></tr>");
+          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea maxlength='255' rows='4' cols='90'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button></td><td></td></tr>");
       
           return;
       }
 
-var cssid;
+var pfid;
+var acfid;
       ldmsg= function(cid,fid)
       {
-            $("#frnd"+cssid).css('color','blue');
-            cssid=fid;
-            $("#frnd"+cssid).css('color','green');
+            $("#frnd"+pfid).css('color','blue');
+            pfid=fid;
+            $("#frnd"+fid).css('color','green');
             this.cid=cid;
             this.fid=fid;
             $.ajax({
@@ -211,6 +218,7 @@ var cssid;
                   var sntmsg=response.sntmsg;
                   var reclen=recmsg.length;
                   var sntlen=sntmsg.length
+                  playAud(reclen);
                   $("#msg").text('');
                   $("#msg div").remove();
                   if(sntlen>reclen)
@@ -223,20 +231,21 @@ var cssid;
                     {
                       if((i<sntlen && reclen<=0) || (i<sntlen && j>=reclen) || (i<sntlen && sntmsg[i].id<recmsg[j].id))
                       {
-                          $("#msg").append("<div class='row'><p class='col-sm-4'>"+sntmsg[i].mssg+"</p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                          $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
                           i++;
                       }
 
                       if((j<reclen && sntlen<=0) || (j<reclen && i>=sntlen) || (j<reclen && sntmsg[i].id>recmsg[j].id))
                       {
-                          $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'>"+recmsg[j].mssg+"</p></div>");
+                          $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span></p></div>");
                           j++;
                       }
                     }
                   }
                   else
                     $("#msg").text("No messages yet.");
-
+                  preclen=reclen;
+                  acfid=fid;
                   $("#scrl").scrollTop($("#msg").height());
                   $("#snd").attr('class','btn btn-info').fadeIn();
                   ldTime=setTimeout(setLdTime,3500);
@@ -245,6 +254,15 @@ var cssid;
             });
               
             return;
+      }
+
+      playAud= function(reclen)
+      {
+          if(acfid==fid && reclen>preclen)
+          {
+              $("#aud")[0].play();
+          }
+          return;
       }
 
       setLdTime= function()
