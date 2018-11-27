@@ -60,7 +60,7 @@
 
 </div>
 <audio id="aud">
-  <source src="{{asset('audio/stairs.mp3')}}" type="audio/mpeg">
+  <source src="https://dipchatbox.herokuapp.com/audio/stairs.mp3" type="audio/mpeg">
 </audio>
 
 <script type="text/javascript">

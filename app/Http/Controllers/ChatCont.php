@@ -83,7 +83,7 @@ class ChatCont extends Controller
 			$ext=strtolower($file->getClientOriginalExtension());
 			$fileFullName=$fileName.'.'.$ext;
 			$uploadPath=public_path().'/files/';
-			$fileurl='http://http://dipchatbox.herokuapp.com/files/'.$fileFullName;
+			$fileurl='https://dipchatbox.herokuapp.com/files/'.$fileFullName;
 			$done=$file->move($uploadPath,$fileFullName);
 			if($done)
 			{
