@@ -53,7 +53,7 @@
     </thead>
     <tbody id="tbody">
       <tr>
-        <td class='col-sm-8'><div id="scrl" style="height:350px;width:700px;overflow-y:auto;overflow-x:hidden;background-image: linear-gradient(to right,#ffffcc,#ffffcc);"><div style="width:690px" id="msg"></div></div></td> <td id='frnds' class='col-sm-4'></td>
+        <td class='col-sm-8'><div id="scrl" style="height:350px;width:700px;overflow-y:auto;overflow-x:auto;background-image: linear-gradient(to right,#ffffcc,#ffffcc);"><div style="width:690px" id="msg"></div></div></td> <td id='frnds' class='col-sm-4'></td>
       </tr>
     </tbody>
   </table>
@@ -72,12 +72,18 @@
 		}
 	});
 
-
+//GLOBALS
   var cus='';
   var frnds='';
   var cid='';
   var fid='';
   var preclen='';
+  var pfid;
+  var acfid;
+  var psntlen;
+  var myTime=undefined;
+  var ldTime=undefined;
+//
 
   logBtn= function(){
 		$("#email").val('');
@@ -107,6 +113,7 @@
         frnds='';
         pfid='';
         preclen='';
+        psntlen='';
     }
   });
 }
@@ -135,8 +142,6 @@
 		});
 	});
 
-var myTime=undefined;
-var ldTime=undefined;
 
 load= function(){
       $.ajax({
@@ -188,16 +193,21 @@ user= function(response){
           {
               $("#frnds").append("<div class='row'><a style='color:blue' id='frnd"+frnds[i].id+"' href='#' onclick='ldmsg("+cus.id+","+frnds[i].id+")'>"+frnds[i].name+"</a></div>");
           }
-          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea maxlength='255' rows='4' cols='90'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button></td><td></td></tr>");
+          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea maxlength='255' rows='4' cols='90'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button><input id='file' type='file'></td><td></td></tr>");
       
           return;
       }
 
-var pfid;
-var acfid;
+
       ldmsg= function(cid,fid)
       {
             $("#frnd"+pfid).css('color','blue');
+            if(pfid!=fid)
+            {
+              acfid='';
+              preclen='';
+              psntlen='';
+            }
             pfid=fid;
             $("#frnd"+fid).css('color','green');
             this.cid=cid;
@@ -219,35 +229,124 @@ var acfid;
                   var reclen=recmsg.length;
                   var sntlen=sntmsg.length
                   playAud(reclen);
-                  $("#msg").text('');
-                  $("#msg div").remove();
                   if(sntlen>reclen)
                     var len=sntlen;
                   else
                     var len=reclen;
 
-                  if(len>0){
-                    for(var i=0, j=0; j<reclen || i<sntlen;)
-                    {
-                      if((i<sntlen && reclen<=0) || (i<sntlen && j>=reclen) || (i<sntlen && sntmsg[i].id<recmsg[j].id))
-                      {
-                          $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
-                          i++;
-                      }
+                  if((acfid==fid && reclen!=preclen) || (acfid==fid && sntlen!=psntlen) || (!acfid || len<=0))
+                  {
+                      $("#msg").text('');
+                      $("#msg div").remove();
 
-                      if((j<reclen && sntlen<=0) || (j<reclen && i>=sntlen) || (j<reclen && sntmsg[i].id>recmsg[j].id))
-                      {
-                          $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span></p></div>");
-                          j++;
+                      if(len>0){
+                        $("#msg").append("<div class='row'></div><br>");
+                        for(var i=0, j=0; j<reclen || i<sntlen;)
+                        {
+                          if((i<sntlen && reclen<=0) || (i<sntlen && j>=reclen) || (i<sntlen && sntmsg[i].id<recmsg[j].id))
+                          {
+                              if(sntmsg[i].mssg && sntmsg[i].fileurl)
+                              {
+                                if(sntmsg[i].ext=="png" || sntmsg[i].ext=="jpg")
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span><br><br><img src='"+sntmsg[i].fileurl+"' style='height:200px;width:180px'></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
+
+                                else if(sntmsg[i].ext=="mp4")
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span><br><br><video width='300px' height='200px' controls><source src='"+sntmsg[i].fileurl+"' type='video/"+sntmsg[i].ext+"'></video></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
+
+                                else if(sntmsg[i].ext=="mp3")
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span><br><br><audio controls><source src='"+sntmsg[i].fileurl+"' type='audio/mpeg'></audio></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
+                              }
+                              
+                              else if(sntmsg[i].mssg && !sntmsg[i].fileurl)
+                              {
+                                $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                              }
+
+                              else if(!sntmsg[i].mssg && sntmsg[i].fileurl)
+                              {
+                                if(sntmsg[i].ext=="png" || sntmsg[i].ext=="jpg")
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><img src='"+sntmsg[i].fileurl+"' style='height:200px;width:180px'></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
+
+                                else if(sntmsg[i].ext=="mp4")
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><video width='300px' height='200px' controls><source src='"+sntmsg[i].fileurl+"' type='video/"+sntmsg[i].ext+"'></video></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
+
+                                else if(sntmsg[i].ext=="mp3")
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><audio controls><source src='"+sntmsg[i].fileurl+"' type='audio/mpeg'></audio></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
+                              }
+
+                              i++;
+                          }
+
+                          if((j<reclen && sntlen<=0) || (j<reclen && i>=sntlen) || (j<reclen && sntmsg[i].id>recmsg[j].id))
+                          {
+                              if(recmsg[j].mssg && recmsg[j].fileurl)
+                              {
+                                if(recmsg[j].ext=="png" || recmsg[j].ext=="jpg")
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span><br><br><img src='"+recmsg[j].fileurl+"' style='height:200px;width:180px'></p></div>");
+                                }
+
+                                else if(recmsg[j].ext=="mp4")
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span><br><br><video width='300px' height='200px' controls><source src='"+recmsg[j].fileurl+"' type='video/"+recmsg[j].ext+"'></video></p></div>");
+                                }
+
+                                else if(recmsg[j].ext=="mp3")
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span><br><br><audio controls><source src='"+recmsg[j].fileurl+"' type='audio/mpeg'></audio></p></div>");
+                                }
+
+                              }
+
+                              else if(recmsg[j].mssg && !recmsg[j].fileurl)
+                              {
+                                $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span></p></div>");
+                              }
+
+                              if(!recmsg[j].mssg && recmsg[j].fileurl)
+                              {
+                                if(recmsg[j].ext=="png" || recmsg[j].ext=="jpg")
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><img src='"+recmsg[j].fileurl+"' style='height:200px;width:180px'></p></div>");
+                                }
+
+                                else if(recmsg[j].ext=="mp4")
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><video width='300px' height='200px' controls><source src='"+recmsg[j].fileurl+"' type='video/"+recmsg[j].ext+"'></video></p></div>");
+                                }
+
+                                else if(recmsg[j].ext=="mp3")
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><audio controls><source src='"+recmsg[j].fileurl+"' type='audio/mpeg'></audio></p></div>");
+                                }
+                              }
+
+                              j++;
+                          }
+                        }
+                          preclen=reclen;
+                          psntlen=sntlen;
                       }
-                    }
+                      else
+                        $("#msg").text("No messages yet.");
+
+                      acfid=fid;
+                      $("#scrl").scrollTop($("#msg").height());
+                      $("#snd").attr('class','btn btn-info').fadeIn();
                   }
-                  else
-                    $("#msg").text("No messages yet.");
-                  preclen=reclen;
-                  acfid=fid;
-                  $("#scrl").scrollTop($("#msg").height());
-                  $("#snd").attr('class','btn btn-info').fadeIn();
+
                   ldTime=setTimeout(setLdTime,3500);
                 return;
               }
@@ -273,26 +372,30 @@ var acfid;
       sndmsg= function()
       {
           clearTimeout(ldTime);
-          var text=$("textarea").val();
-          if(text)
+          var mssg=$("textarea").val();
+          var file=$("#file")[0].files[0];
+          var formData=new FormData();
+          formData.append('file',file);
+          formData.append('mssg',mssg);
+          if(mssg!='' || file)
             $.ajax({
               url: 'sndmsg',
               type: 'POST',
-              data: {
-                  mssg: text,
-              },
-
+              data: formData,
+              processData: false,
+              contentType: false,            
               success: function(response)
               {
                   cid=response.cid;
                   fid=response.fid;
                   $("textarea").val('');
+                  $("#file").val('');
                   ldmsg(cid,fid);
               }
 
             });
           else
-            alert("Write Something.");
+            alert("Write or upload Something.");
 
           
       }

@@ -62,20 +62,35 @@ class ChatCont extends Controller
 		$fid=$req->fid;
 		Session::put('cid',$cid);
 		Session::put('fid',$fid);
-		$recmsg=Message::where(['cid'=>$fid,'fid'=>$cid])->select('mssg','id')->get();
-		$sntmsg=Message::where(['cid'=>$cid,'fid'=>$fid])->select('mssg','id')->get();
+		$recmsg=Message::where(['cid'=>$fid,'fid'=>$cid])->get();
+		$sntmsg=Message::where(['cid'=>$cid,'fid'=>$fid])->get();
 		return response()->json(array('recmsg'=>$recmsg, 'sntmsg'=>$sntmsg, 'cid'=>$cid, 'fid'=>$fid));
 	}
 
 	public function sndmsg(Request $req)
 	{
 		$mssg=$req->mssg;
+		$file=$req->file('file');
 		$cid=Session::get('cid');
 		$fid=Session::get('fid');
 		$msgMod= new Message();
 		$msgMod->cid=$cid;
 		$msgMod->fid=$fid;
 		$msgMod->mssg=$mssg;
+		if($file)
+		{
+			$fileName=str_random(20);
+			$ext=strtolower($file->getClientOriginalExtension());
+			$fileFullName=$fileName.'.'.$ext;
+			$uploadPath=public_path().'/files/';
+			$fileurl='http://http://dipchatbox.herokuapp.com/files/'.$fileFullName;
+			$done=$file->move($uploadPath,$fileFullName);
+			if($done)
+			{
+				$msgMod->fileurl=$fileurl;
+				$msgMod->ext=$ext;			
+			}	
+		}
 		$success=$msgMod->saveOrFail();
 		if($success)
 			return response()->json(array('cid'=>$cid, 'fid'=>$fid, 'msg'=>null));

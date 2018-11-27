@@ -18,6 +18,8 @@ class CreateMessagesTable extends Migration
             $table->integer('cid');
             $table->integer('fid');
             $table->string('mssg');
+            $table->string('fileurl');
+            $table->string('ext');
             $table->timestamps();
         });
     }
