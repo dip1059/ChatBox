@@ -17,9 +17,9 @@ class CreateMessagesTable extends Migration
             $table->increments('id');
             $table->integer('cid');
             $table->integer('fid');
-            $table->string('mssg');
-            $table->string('fileurl');
-            $table->string('ext');
+            $table->string('mssg')->nullable();
+            $table->string('fileurl')->nullable();
+            $table->string('ext')->nullable();
             $table->timestamps();
         });
     }

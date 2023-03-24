@@ -5,9 +5,9 @@
   <meta charset="utf-8">
   <meta name="csrf_token" content="{{csrf_token()}}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{{asset('/css/bootstrap.min.css')}}">
+  <script src="{{asset('/js/jquery.min.js')}}"></script>
+  <script src="{{asset('/js/bootstrap.min.js')}}"></script>
 </head>
 <body onload='load()' style="background-image: linear-gradient(to right,#cce6ff,#ffb3ff)">
 <div class="container">
@@ -193,7 +193,7 @@ user= function(response){
           {
               $("#frnds").append("<div class='row'><a style='color:blue' id='frnd"+frnds[i].id+"' href='#' onclick='ldmsg("+cus.id+","+frnds[i].id+")'>"+frnds[i].name+"</a></div>");
           }
-          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea maxlength='255' rows='4' cols='90'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button><input id='file' type='file'></td><td></td></tr>");
+          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea maxlength='255' rows='4' cols='90'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button><br><br><input id='file' type='file'></td><td></td></tr>");
       
           return;
       }

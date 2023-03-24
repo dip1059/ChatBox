@@ -83,7 +83,7 @@ class ChatCont extends Controller
 			$ext=strtolower($file->getClientOriginalExtension());
 			$fileFullName=$fileName.'.'.$ext;
 			$uploadPath=public_path().'/files/';
-			$fileurl='http://192.168.1.7:8084/ChatBox/public/files/'.$fileFullName;
+			$fileurl='/files/'.$fileFullName;
 			$done=$file->move($uploadPath,$fileFullName);
 			if($done)
 			{
