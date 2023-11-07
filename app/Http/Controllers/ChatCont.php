@@ -79,9 +79,16 @@ class ChatCont extends Controller
 		$msgMod->mssg=$mssg;
 		if($file)
 		{
-			$fileName=str_random(20);
+			// dd($file->getClientOriginalName());
+			$fileName=substr($file->getClientOriginalName(),0,15);
+			$pattern = '/[^a-zA-Z0-9\s]/';
+			$fileName = preg_replace($pattern, '_', $fileName);
+			$fileName = $fileName.'_'.strtolower(str_random(3));
+			$fileName=str_replace(' ','_',$fileName);
+
 			$ext=strtolower($file->getClientOriginalExtension());
 			$fileFullName=$fileName.'.'.$ext;
+
 			$uploadPath=public_path().'/files/';
 			$fileurl='/files/'.$fileFullName;
 			$done=$file->move($uploadPath,$fileFullName);

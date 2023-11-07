@@ -193,7 +193,7 @@ user= function(response){
           {
               $("#frnds").append("<div class='row'><a style='color:blue' id='frnd"+frnds[i].id+"' href='#' onclick='ldmsg("+cus.id+","+frnds[i].id+")'>"+frnds[i].name+"</a></div>");
           }
-          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea maxlength='255' rows='4' cols='90'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button><br><br><input id='file' type='file'></td><td></td></tr>");
+          $("#tbody").append("<tr class='tr'><td class='col-sm-8'><textarea rows='4' cols='84'></textarea>&nbsp<button id='snd' hidden type='button' onclick='sndmsg()'>Send</button><br><br><input id='file' type='file'></td><td></td></tr>");
       
           return;
       }
@@ -245,6 +245,11 @@ user= function(response){
                         {
                           if((i<sntlen && reclen<=0) || (i<sntlen && j>=reclen) || (i<sntlen && sntmsg[i].id<recmsg[j].id))
                           {
+                              let filename = '';
+                              if (sntmsg[i].fileurl) {
+                                filename = sntmsg[i].fileurl.replace('/files/', '');
+                              }
+
                               if(sntmsg[i].mssg && sntmsg[i].fileurl)
                               {
                                 if(sntmsg[i].ext=="png" || sntmsg[i].ext=="jpg")
@@ -260,6 +265,11 @@ user= function(response){
                                 else if(sntmsg[i].ext=="mp3")
                                 {
                                   $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span><br><br><audio controls><source src='"+sntmsg[i].fileurl+"' type='audio/mpeg'></audio></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
+
+                                else
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><span style='background-color:#009933;border-radius:25px;color:white;padding:6px'>"+sntmsg[i].mssg+"</span><br><br><a href='"+sntmsg[i].fileurl+"' target='_blank'>"+filename+"</a></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
                                 }
                               }
                               
@@ -284,6 +294,11 @@ user= function(response){
                                 {
                                   $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><audio controls><source src='"+sntmsg[i].fileurl+"' type='audio/mpeg'></audio></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
                                 }
+
+                                else
+                                {
+                                  $("#msg").append("<div class='row' style='padding-left:25px'><p class='col-sm-4'><a href='"+sntmsg[i].fileurl+"' target='_blank'>"+filename+"</a></p><p class='col-sm-4'></p><p class='col-sm-4'></p></div>");
+                                }
                               }
 
                               i++;
@@ -291,6 +306,11 @@ user= function(response){
 
                           if((j<reclen && sntlen<=0) || (j<reclen && i>=sntlen) || (j<reclen && sntmsg[i].id>recmsg[j].id))
                           {
+                            let filename = '';
+                            if (recmsg[j].fileurl) {
+                              filename = recmsg[j].fileurl.replace('/files/', '');
+                            }
+
                               if(recmsg[j].mssg && recmsg[j].fileurl)
                               {
                                 if(recmsg[j].ext=="png" || recmsg[j].ext=="jpg")
@@ -306,6 +326,11 @@ user= function(response){
                                 else if(recmsg[j].ext=="mp3")
                                 {
                                   $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span><br><br><audio controls><source src='"+recmsg[j].fileurl+"' type='audio/mpeg'></audio></p></div>");
+                                }
+
+                                else
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><span style='background-color:#ff6666;border-radius:25px;color:white;padding:6px'>"+recmsg[j].mssg+"</span><br><br><a href='"+recmsg[j].fileurl+"' target='_blank'>"+filename+"</a></p></div>");
                                 }
 
                               }
@@ -331,6 +356,11 @@ user= function(response){
                                 {
                                   $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><audio controls><source src='"+recmsg[j].fileurl+"' type='audio/mpeg'></audio></p></div>");
                                 }
+
+                                else
+                                {
+                                  $("#msg").append("<div class='row'><p class='col-sm-4'></p><p class='col-sm-4'></p><p class='col-sm-4'><a href='"+recmsg[j].fileurl+"' target='_blank'>"+filename+"</a></p></div>");
+                                }
                               }
 
                               j++;
@@ -347,7 +377,7 @@ user= function(response){
                       $("#snd").attr('class','btn btn-info').fadeIn();
                   }
 
-                  ldTime=setTimeout(setLdTime,3500);
+                  ldTime=setTimeout(setLdTime,10000);
                 return;
               }
             });
